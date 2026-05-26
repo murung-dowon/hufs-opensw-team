@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 입력 - 팀 프로젝트</title>
+    <style>
+        /* [1] 전체 페이지 레이아웃 */
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* [2] 메인(흰색 배경 영역) */
+        .app-container {
+            width: 100%;
+            max-width: 420px; /* 모바일 화면에 적합한 최대 너비 */
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 30px; /* 각 섹션 간의 간격 */
+        }
+
+        /* [3] 공통 요소 스타일 */
+        .section-title {
+            background-color: #e9ecef;
+            color: #343a40;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        /* [4] 이름 입력창 스타일 */
+        .name-input {
+            width: 100%;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 14px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: #4dabf7; /* 포커스 시 파란색 테두리 */
+        }
+
+        /* [5] 단과대 선택 그리드 (3열 배치) */
+        .college-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        /* [6] 단과대 개별 버튼 스타일 */
+        .college-btn {
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            word-break: keep-all; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .college-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        /* 단과대 버튼 선택 상태 */
+        .college-btn.selected {
+            background-color: #e7f5ff;
+            color: #1971c2;
+            border-color: #74c0fc;
+            text-decoration: underline;
+            text-decoration-color: #1971c2;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        /* [7] 시작하기 버튼 스타일 */
+        .start-btn {
+            width: 100%;
+            background-color: #ced4da;
+            color: #495057;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 10px;
+        }
+
+        /* 입력이 완료되어 활성화된 상태의 버튼 */
+        .start-btn.active {
+            background-color: #228be6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 139, 230, 0.3);
+        }
+
+        .start-btn.active:active {
+            transform: translateY(2px); /* 클릭 시 살짝 눌리는 효과 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="input-group">
+            <div class="section-title">기본 정보 입력</div>
+            <input type="text" id="userName" class="name-input" placeholder="이름을 입력해주세요" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <div class="section-title">소속 단과대 선택</div>
+            <div class="college-grid" id="collegeGrid">
+                <button class="college-btn">인문대학</button>
+                <button class="college-btn">통번역대학</button>
+                <button class="college-btn">동유럽학대학</button>
+                <button class="college-btn">국제지역대학</button>
+                <button class="college-btn">경상대학</button>
+                <button class="college-btn">자연과학대학</button>
+                <button class="college-btn">공과대학</button>
+                <button class="college-btn">AI융합대학</button>
+                <button class="college-btn">바이오메디컬</button>
+                <button class="college-btn">자율전공학부</button>
+                <button class="college-btn">융합인재대학</button>
+                <button class="college-btn">기타 소속</button>
+            </div>
+        </div>
+
+        <button id="startBtn" class="start-btn">시작하기</button>
+
+    </div>
+
+    <script>
+        // DOM 요소 초기화
+        const collegeButtons = document.querySelectorAll('.college-btn');
+        const startButton = document.getElementById('startBtn');
+        const nameInput = document.getElementById('userName');
+
+        // 상태 저장용 변수
+        let selectedCollege = null;
+
+        // [기능 1] 버튼 활성화 상태 업데이트 함수
+        // 이름이 입력되고 단과대가 선택되었을 때만 시작 버튼을 파란색으로 변경
+        function updateStartButtonState() {
+            if (nameInput.value.trim() !== '' && selectedCollege !== null) {
+                startButton.classList.add('active');
+            } else {
+                startButton.classList.remove('active');
+            }
+        }
+
+        // [기능 2] 이름 입력 이벤트 감지
+        nameInput.addEventListener('input', updateStartButtonState);
+
+        // [기능 3] 단과대 버튼 클릭 이벤트 로직
+        collegeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 1. 기존에 선택된 버튼의 스타일 초기화
+                collegeButtons.forEach(btn => btn.classList.remove('selected'));
+                
+                // 2. 현재 클릭한 버튼에 선택 스타일 적용
+                this.classList.add('selected');
+                
+                // 3. 선택한 단과대 데이터 저장
+                selectedCollege = this.innerText;
+                
+                // 4. 버튼 활성화 상태 체크
+                updateStartButtonState();
+            });
+        });
+
+        // [기능 4] 시작하기 버튼 클릭 시 다음 페이지로 데이터 전송 및 이동
+        startButton.addEventListener('click', function() {
+            const currentName = nameInput.value.trim();
+
+            // 유효성 검사 (입력 누락 방지)
+            if (!currentName) {
+                alert("이름을 정확히 입력해주세요.");
+                nameInput.focus();
+                return;
+            }
+            if (!selectedCollege) {
+                alert("소속 단과대를 목록에서 선택해주세요.");
+                return;
+            }
+
+            // URL 파라미터 생성
+            const encodedName = encodeURIComponent(currentName);
+            const encodedCollege = encodeURIComponent(selectedCollege);
+
+            // 다음 페이지 주소
+            const nextUrl = `quiz.html?name=${encodedName}&college=${encodedCollege}`;
+
+            // 페이지 이동
+            window.location.href = nextUrl;
+        });
+    </script>
+
+</body>
+</html>
