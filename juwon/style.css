@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+  font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  color: #000000;
+}
+
+.quiz-container {
+  width: 470px;
+  min-height: 820px;
+  margin: 0 auto;
+  padding: 22px 15px 10px;
+  background-color: #ffffff;
+}
+
+.progress-box {
+  width: 100%;
+  background-color: #d9d9d9;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+.progress-text {
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #eeeeee;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background-color: #555555;
+  transition: width 0.25s ease;
+}
+
+.question-box {
+  width: 347px;
+  min-height: 108px;
+  margin: 70px auto 55px;
+  padding: 14px 16px;
+  background-color: #d9d9d9;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.question-box p,
+.guide-box p {
+  margin: 0;
+}
+
+.guide-box {
+  width: 347px;
+  min-height: 40px;
+  margin: 0 auto 34px;
+  padding: 10px 16px;
+  background-color: #d9d9d9;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.options {
+  width: 347px;
+  margin: 0 auto;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  min-height: 75px;
+  margin-bottom: 14px;
+  padding: 0 18px;
+  border: none;
+  background-color: #d9d9d9;
+  color: #000000;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.option-btn:hover {
+  background-color: #cfcfcf;
+}
+
+.option-btn.selected {
+  background-color: #b7cbe6;
+}
+
+.bottom-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.bottom-buttons button {
+  width: 190px;
+  height: 60px;
+  border: none;
+  background-color: #d9d9d9;
+  color: #000000;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bottom-buttons button:hover {
+  background-color: #cfcfcf;
+}
+
+.bottom-buttons button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.result-box {
+  width: 347px;
+  margin: 70px auto 0;
+  padding: 25px 20px;
+  background-color: #d9d9d9;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.result-title {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.result-score {
+  margin-top: 18px;
+  font-size: 15px;
+}
+
+@media (max-width: 500px) {
+  .quiz-container {
+    width: 100%;
+  }
+
+  .question-box,
+  .guide-box,
+  .options,
+  .result-box {
+    width: 74%;
+  }
+
+  .bottom-buttons button {
+    width: 43%;
+  }
+}
