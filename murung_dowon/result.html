@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결과 | H-MBTI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      align-items: flex-start;
+      padding-top: 32px;
+      background: linear-gradient(160deg, #EEF2F8 0%, #dce6f5 100%);
+    }
+
+    .result-card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+
+    /* 상단 배너 */
+    .result-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #1a4a8a 100%);
+      color: #fff;
+      padding: 36px 28px 32px;
+      text-align: center;
+    }
+
+    .result-emoji {
+      font-size: 64px;
+      margin-bottom: 12px;
+      display: block;
+      animation: pop 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(0); opacity: 0; }
+      70%  { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .result-name-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .result-type {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .result-eng {
+      font-size: 13px;
+      opacity: 0.65;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* 본문 */
+    .result-body {
+      padding: 28px 24px;
+    }
+
+    .result-desc {
+      background: var(--bg);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 16px 16px;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .result-quote {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 0 8px;
+    }
+
+    /* 점수 바 */
+    .score-section {
+      margin-bottom: 28px;
+    }
+
+    .score-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .score-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .score-type {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 80px;
+    }
+
+    .score-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .score-pt {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    /* 대학 매칭 */
+    .match-section {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .match-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .match-colleges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .match-chip {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* 버튼 그룹 */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="result-card">
+    <div class="result-banner" id="resultBanner">
+      <span class="result-emoji" id="resultEmoji">🎯</span>
+      <div class="result-label">당신의 외대 생존 유형</div>
+      <div class="result-name-badge" id="resultNameBadge">닉네임 · 단과대</div>
+      <div class="result-type" id="resultType">유형명</div>
+      <div class="result-eng" id="resultEng">English Name</div>
+    </div>
+
+    <div class="result-body">
+      <div class="result-desc" id="resultDesc">설명 로딩 중...</div>
+      <div class="result-quote" id="resultQuote"></div>
+
+      <div class="match-section" id="matchSection" style="display:none">
+        <div class="match-label">🏫 주요 매칭 단과대</div>
+        <div class="match-colleges" id="matchColleges"></div>
+      </div>
+
+      <div class="score-section">
+        <div class="score-title">📊 상위 유형 점수</div>
+        <div id="scoreList"></div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-primary" onclick="location.href='index.html'">🔄 다시 하기</button>
+        <button class="btn-secondary" onclick="share()">🔗 결과 공유하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const TYPES = {
+    셔틀정복자: {
+      emoji: '🚌',
+      eng: 'The Shuttle Master',
+      desc: '셔틀버스가 운동장을 돌아 나가는 찰나의 타이밍을 계산하는 탈(脫)모현 고수. 광역버스가 경부고속도로에서 레이싱을 펼쳐도 평정심을 잃지 않는다.',
+      quote: '"내 사전에 지각이란 없다, 오직 셔틀 배차 실패만 있을 뿐."',
+      colleges: ['통번역대학', '국가전력언어대학', '인문대학']
+    },
+    명수당낭만: {
+      emoji: '🌿',
+      eng: 'The Myungsu-dang Artist',
+      desc: '명수당 잔디밭에 돗자리를 펴는 순간 그곳이 파리 에펠탑 앞 광장. 거위들과 눈인사를 나누며 배달 음식을 즐길 줄 아는 여유로운 영혼.',
+      quote: '"수업은 빠져도 명수당 광합성은 못 빠지지."',
+      colleges: ['국제지역대학', '융합인재대학']
+    },
+    백년관지박령: {
+      emoji: '💻',
+      eng: 'The Centennial Hall Ghost',
+      desc: '백년관의 에어컨 바람과 와이파이가 없으면 생존 불가능. 한 번 자리를 잡으면 해가 지고 달이 뜰 때까지 엉덩이를 떼지 않는 집중력의 소유자.',
+      quote: '"여기가 내 집보다 쾌적한데 굳이 왜 나가?"',
+      colleges: ['공과대학', 'AI융합대학', '바이오메디컬공학부']
+    },
+    고행자: {
+      emoji: '⛰️',
+      eng: 'The Hill Climber',
+      desc: '남들이 셔틀 줄 서서 시간 낭비할 때 묵묵히 가파른 언덕을 걸어 올라간다. 허벅지 근육과 인내심이 남다르며 어떤 시련이 와도 꿋꿋이 정상을 향한다.',
+      quote: '"셔틀은 나약한 자들이나 타는 것이다."',
+      colleges: ['자연과학대학', '기후변화융합학부']
+    },
+    맛집네비: {
+      emoji: '🍜',
+      eng: 'The Mohyeon Foodie',
+      desc: '모산, 밀플랜비는 기본. 이름 없는 골목 맛집까지 섭렵한 외대 앞 맛집 네비게이터. 학우들이 "오늘 뭐 먹지?"라고 물으면 0.1초 만에 메뉴와 위치, 가성비까지 브리핑 가능.',
+      quote: '"모현에 맛집이 없다고? 네가 아직 나를 안 만나서 그래."',
+      colleges: ['경상대학']
+    },
+    출튀장인: {
+      emoji: '💨',
+      eng: 'The Vanishing Specialist',
+      desc: '교수님 시선 피해서 자연스럽게 사라지는 기술 보유. 강의 종료 5분 전에 이미 문 앞에 있다. 모든 단과대에 분포하는 전설적인 유형.',
+      quote: '"교수님 감사합니다~ (탈출)"',
+      colleges: ['전 단과대']
+    },
+    학식개척자: {
+      emoji: '🍱',
+      eng: 'The Cafeteria Pioneer',
+      desc: '학식 메뉴표가 뜨면 가장 먼저 확인한다. 가성비와 동선을 고려해 최적의 식사 루트를 설계하는 현실주의자.',
+      quote: '"오늘 학식 괜찮다는데?"',
+      colleges: ['전 단과대']
+    },
+    에타관망자: {
+      emoji: '📱',
+      eng: 'The Everytime Watcher',
+      desc: '글은 절대 안 쓰지만 모든 사건의 전말을 알고 있다. 과제 정보, 맛집 정보, 싸움 구경까지 전부 실시간으로 체크하는 정보 수집형 인간.',
+      quote: '"에타는 안 믿지만 제일 열심히 봄."',
+      colleges: ['경상대학', '국제지역대학', 'AI융합대학']
+    },
+    벼락치기: {
+      emoji: '⚡',
+      eng: 'The Last-Minute Survivor',
+      desc: '시험기간에만 존재가 관측된다. 평소엔 조용하지만 시험 하루 전 각성하여 인간의 잠재력을 증명한다.',
+      quote: '"잠은 죽어서 자는 거고 학점은 내일 나온다."',
+      colleges: ['전 단과대 공통']
+    },
+    과방실세: {
+      emoji: '👑',
+      eng: 'The Department Insider',
+      desc: '과방 냉장고 구조부터 선배 족보 위치까지 다 알고 있다. 행사, MT, 회식 출석률이 비정상적으로 높은 과방의 실질적 권력자.',
+      quote: '"과방에 없으면 집에 있는 거임."',
+      colleges: ['통번역대학', '인문대학']
+    },
+    명예자취: {
+      emoji: '🏠',
+      eng: 'The Honorary Self-Liver',
+      desc: '내 자취방 월세는 아까운데, 친구 자취방 비밀번호는 내 생일보다 잘 외운다. 친구 집 냉장고에 내 전용 음료수가 있고, 화장실에 내 칫솔이 꽂혀 있다.',
+      quote: '"월세는 네가 내지만, 삶의 질은 내가 챙긴다."',
+      colleges: ['전 단과대']
+    },
+    모현술고래: {
+      emoji: '🍶',
+      eng: 'The Mohyeon Drinker',
+      desc: '술이 취하는 게 아니라 몸에 저장되는 느낌. 아무리 마셔도 표정 하나 안 변하고 남들 취하는 거 구경하는 고수. 다음 날 1교시에 가장 멀끔한 모습으로 나타나 친구들을 경악하게 한다.',
+      quote: '"취하려고 마시는 게 아니라, 맛있어서 마시는 건데?"',
+      colleges: ['전 단과대']
+    }
+  };
+
+  function init() {
+    const name    = localStorage.getItem('hmbti_name')    || '익명';
+    const college = localStorage.getItem('hmbti_college') || '';
+    const result  = localStorage.getItem('hmbti_result')  || '셔틀정복자';
+    const scores  = JSON.parse(localStorage.getItem('hmbti_scores') || '{}');
+
+    const info = TYPES[result] || TYPES['셔틀정복자'];
+
+    document.getElementById('resultEmoji').textContent   = info.emoji;
+    document.getElementById('resultNameBadge').textContent = `${name} · ${college}`;
+    document.getElementById('resultType').textContent    = `[${result}]`;
+    document.getElementById('resultEng').textContent     = info.eng;
+    document.getElementById('resultDesc').textContent    = info.desc;
+    document.getElementById('resultQuote').textContent   = info.quote;
+
+    // 매칭 단과대
+    if (info.colleges && info.colleges.length) {
+      const section = document.getElementById('matchSection');
+      const container = document.getElementById('matchColleges');
+      section.style.display = 'block';
+      info.colleges.forEach(c => {
+        const chip = document.createElement('span');
+        chip.className = 'match-chip';
+        chip.textContent = c;
+        container.appendChild(chip);
+      });
+    }
+
+    // 점수 순위
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const maxPt  = sorted[0]?.[1] || 1;
+    const list   = document.getElementById('scoreList');
+    sorted.forEach(([type, pt]) => {
+      const pct = Math.round((pt / maxPt) * 100);
+      list.innerHTML += `
+        <div class="score-item">
+          <span class="score-type">${type}</span>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <span class="score-pt">${pt}pt</span>
+        </div>`;
+    });
+  }
+
+  function share() {
+    const result = localStorage.getItem('hmbti_result') || '';
+    const name   = localStorage.getItem('hmbti_name')   || '';
+    const info   = TYPES[result];
+    if (navigator.share) {
+      navigator.share({
+        title: 'H-MBTI 외대 생존 유형 검사',
+        text: `${name}의 유형은 [${result}] ${info?.emoji || ''}\n"${info?.quote || ''}"`,
+        url: location.href
+      });
+    } else {
+      navigator.clipboard.writeText(location.href)
+        .then(() => alert('링크가 복사되었습니다!'))
+        .catch(() => alert('공유 기능을 지원하지 않는 브라우저입니다.'));
+    }
+  }
+
+  init();
+  </script>
+</body>
+</html>

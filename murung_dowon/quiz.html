@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>질문 | H-MBTI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { align-items: flex-start; padding-top: 32px; }
+
+    .quiz-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 440px;
+      padding: 28px 24px 24px;
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .q-counter {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .q-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+
+    .question-box {
+      background: var(--bg);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 18px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.55;
+      margin: 16px 0 20px;
+      min-height: 80px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s;
+      line-height: 1.45;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent);
+      background: #e8f0fb;
+    }
+
+    .option-btn.selected {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .option-label {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--accent);
+      min-width: 18px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .option-btn.selected .option-label {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-nav {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .btn-prev {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 2px solid var(--border);
+    }
+
+    .btn-prev:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-prev:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .btn-next {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,43,107,0.22);
+    }
+
+    .btn-next:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-card">
+    <div class="q-header">
+      <span class="q-counter" id="qCounter">1 / 15</span>
+      <span class="q-badge">H-MBTI</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:6.67%"></div>
+      </div>
+    </div>
+
+    <div class="question-box" id="questionText">질문 로딩 중...</div>
+
+    <div class="options" id="optionsArea">
+      <button class="option-btn" type="button"><span class="option-label">①</span><span></span></button>
+      <button class="option-btn" type="button"><span class="option-label">②</span><span></span></button>
+      <button class="option-btn" type="button"><span class="option-label">③</span><span></span></button>
+      <button class="option-btn" type="button"><span class="option-label">④</span><span></span></button>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-nav btn-prev" id="prevBtn">← 이전</button>
+      <button class="btn-nav btn-next" id="nextBtn">다음 →</button>
+    </div>
+  </div>
+
+  <script>
+  const questions = [
+    {
+      q: "월요일 1교시 수업 15분 전, 셔틀 줄이 끝이 없다면?",
+      opts: [
+        { text: "이어폰 끼고 줄 끝에서 넷플릭스를 켠다", score: { 셔틀정복자: 10, 에타관망자: 5 } },
+        { text: "가방끈 조여 매고 언덕을 향해 걷기 시작한다", score: { 고행자: 10, 벼락치기: 5 } },
+        { text: "\"이건 운명이다\" 동기랑 후생관으로 아점 먹으러 간다", score: { 맛집네비: 10, 출튀장인: 5 } },
+        { text: "빛의 속도로 에타에 접속해 '택시 팟'을 모집한다", score: { 에타관망자: 10, 과방실세: 5 } }
+      ]
+    },
+    {
+      q: "날씨가 미치도록 좋은 공강 시간, 당신은 어디에 있나?",
+      opts: [
+        { text: "돗자리 펴고 명수당 잔디밭에 누워 있다", score: { 명수당낭만: 10, 명예자취: 5 } },
+        { text: "백년관 콘센트 명당 자리에서 과제를 한다", score: { 백년관지박령: 10, 벼락치기: 5 } },
+        { text: "외사로 나가 카페나 맛집 탐방을 나선다", score: { 맛집네비: 10, 명수당낭만: 5 } },
+        { text: "과방 소파에 누워 사람들과 수다를 떨고 있다", score: { 과방실세: 10, 학식개척자: 5 } }
+      ]
+    },
+    {
+      q: "점심 메뉴를 정할 때 당신의 스타일은?",
+      opts: [
+        { text: "\"오늘 학식 A코너 대박이래\" 메뉴를 브리핑한다", score: { 학식개척자: 10, 맛집네비: 5 } },
+        { text: "\"외사로 맛있는거 먹으러 갈래?\" 버스시간 확인한다", score: { 맛집네비: 10, 에타관망자: 5 } },
+        { text: "\"그냥 아무거나...\" 친구 자취방에서 배달 시켜 먹는다", score: { 명예자취: 10, 명수당낭만: 5 } },
+        { text: "점심이고 뭐고 편의점에서 대충 때우고 공부한다", score: { 백년관지박령: 10, 고행자: 5 } }
+      ]
+    },
+    {
+      q: "교수님이 \"영화 보고 소감문 제출\" 이라 한다면?",
+      opts: [
+        { text: "자연스럽게 짐 챙겨서 에어팟 끼고 강의실을 빠져나간다", score: { 출튀장인: 10, 셔틀정복자: 5 } },
+        { text: "노트북 켜는 척하면서 에타 핫게 순회 공연을 시작한다", score: { 에타관망자: 10, 과방실세: 5 } },
+        { text: "바로 단톡방에 \"지금 수업 끝남. 외사 술 팟 구함\" 올린다", score: { 모현술고래: 10, 명예자취: 5 } },
+        { text: "\"오히려 좋아\" 구석에서 밀린 강의나 과제를 조진다", score: { 벼락치기: 10, 백년관지박령: 5 } }
+      ]
+    },
+    {
+      q: "시험 기간, 리프레시 겸 편의점에서 고르는 것은?",
+      opts: [
+        { text: "고카페인 음료 2캔. \"오늘 밤은 이걸로 끝낸다\"", score: { 벼락치기: 10, 백년관지박령: 5 } },
+        { text: "당 충전을 위한 초콜릿과 젤리 한 보따리", score: { 학식개척자: 10, 명수당낭만: 5 } },
+        { text: "\"공부는 템빨이지\" 에타에서 공유된 요약 노트를 본다", score: { 에타관망자: 10, 셔틀정복자: 5 } },
+        { text: "\"공부도 식후경\" 친구랑 야식 메뉴를 미리 고른다", score: { 맛집네비: 10, 과방실세: 5 } }
+      ]
+    },
+    {
+      q: "술자리 1차 종료! 막차 셔틀 알람이 울린다면?",
+      opts: [
+        { text: "\"안녕!\" 인사와 동시에 정류장으로 전력 질주한다", score: { 셔틀정복자: 10, 출튀장인: 5 } },
+        { text: "\"취하면 자고 가!\" 친구 자취방 비번을 누르러 간다", score: { 명예자취: 10, 과방실세: 5 } },
+        { text: "\"어디 가? 이제 소주 달다.\" 평온하게 2차를 시킨다", score: { 모현술고래: 10, 에타관망자: 5 } },
+        { text: "\"막차 줄 너무 길어. 난 그냥 걸어갈래\"", score: { 고행자: 10, 학식개척자: 5 } }
+      ]
+    },
+    {
+      q: "막차 놓치고 기숙사 통금도 간당간당한 이 상황에서?",
+      opts: [
+        { text: "\"친구야, 오늘 침대 한 칸만...\" 미안한 표정(연기)으로 비번을 묻는다", score: { 명예자취: 10, 과방실세: 5 } },
+        { text: "\"해 뜰 때까지 마시면 되지.\" 소주 정수기 모드로 변신한다", score: { 모현술고래: 10, 에타관망자: 5 } },
+        { text: "\"무슨 소리야, 택시라도 타야지.\" 에타에 택시 팟을 올린다", score: { 벼락치기: 10, 셔틀정복자: 5 } },
+        { text: "\"난 무적권 집 간다.\" 술 깰 겸 기숙사까지 걸어간다", score: { 고행자: 10, 출튀장인: 5 } }
+      ]
+    },
+    {
+      q: "에타에 '명수당 수달 나옴!! 졸귀ㅠㅠ' 글이 올라오면?",
+      opts: [
+        { text: "\"헐 수달???\" 댓글 달며 근처 친구에게 영통을 건다", score: { 에타관망자: 10, 과방실세: 5 } },
+        { text: "\"와 이건 못 참지.\" 돗자리 챙겨서 명수당으로 달려간다", score: { 명수당낭만: 10, 맛집네비: 5 } },
+        { text: "\"수달이 나오든 말든...\" 백년관에서 하던 공부를 마저 한다", score: { 백년관지박령: 10, 고행자: 5 } },
+        { text: "구경 가고 싶지만, 버스 명당 놓칠까봐 눈물 머금고 귀가한다", score: { 셔틀정복자: 10, 출튀장인: 5 } }
+      ]
+    },
+    {
+      q: "시험 공부 0%인데 벌써 시험 전날 밤 11시라면?",
+      opts: [
+        { text: "각성 상태 돌입. 족보와 전공 서적을 씹어 먹기 시작한다", score: { 벼락치기: 10, 고행자: 5 } },
+        { text: "\"모르는 건 에타에 물어보자.\" 실시간 질의응답을 한다", score: { 에타관망자: 10, 학식개척자: 5 } },
+        { text: "\"내일 학식 메뉴나 확인하고 일찍 자야지.\" 해탈한다", score: { 학식개척자: 10, 출튀장인: 5 } },
+        { text: "공부 대신 친구 자취방 가서 하소연하며 술 한 잔 한다", score: { 명예자취: 10, 모현술고래: 5 } }
+      ]
+    },
+    {
+      q: "과방 문을 열었을 때, 모르는 새내기들이 앉아 있다면?",
+      opts: [
+        { text: "\"안녕~ 난 XX학번 누구야!\" 능숙하게 대화를 주도한다", score: { 과방실세: 10, 맛집네비: 5 } },
+        { text: "냉장고에서 내 물건만 챙겨서 조용히 명수당으로 간다", score: { 명수당낭만: 10, 출튀장인: 5 } },
+        { text: "새내기들에게 모현 맛집 리스트를 읊어주기 시작한다", score: { 맛집네비: 10, 학식개척자: 5 } },
+        { text: "\"오... 사람 많네.\" 바로 백년관으로 방향을 튼다", score: { 백년관지박령: 10, 고행자: 5 } }
+      ]
+    },
+    {
+      q: "인문경상관까지 가파른 언덕을 오를 때 당신의 모습은?",
+      opts: [
+        { text: "\"이게 다 하체 운동이다.\" 허벅지 펌핑을 즐기며 오른다", score: { 고행자: 10, 벼락치기: 5 } },
+        { text: "언덕 위 강의실 도착 전에 이미 실신 직전 상태다", score: { 출튀장인: 10, 셔틀정복자: 5 } },
+        { text: "언덕 아래 맛집에서 고칼로리를 섭취해 에너지를 채운다", score: { 맛집네비: 10, 학식개척자: 5 } },
+        { text: "줄 서 있는 셔틀 속 동기들과 창밖으로 눈 인사를 나눈다", score: { 과방실세: 10, 명수당낭만: 5 } }
+      ]
+    },
+    {
+      q: "강의가 끝나기 10분 전, 당신은 무엇을 하고 있나?",
+      opts: [
+        { text: "한쪽 어깨에 가방을 메고 문 쪽으로 몸을 틀고 있다", score: { 출튀장인: 10, 셔틀정복자: 5 } },
+        { text: "교수님 질문에 답변하며 수업을 깔끔하게 마무리한다", score: { 과방실세: 10, 학식개척자: 5 } },
+        { text: "끝날 때까지 노트북 화면 속 코드나 필기에 집중한다", score: { 백년관지박령: 10, 벼락치기: 5 } },
+        { text: "끝나고 명수당에서 배달시킬 메뉴를 미리 결제한다", score: { 명수당낭만: 10, 맛집네비: 5 } }
+      ]
+    },
+    {
+      q: "시험이 끝난 직후, 강의실을 나오며 첫 마디는?",
+      opts: [
+        { text: "\"아싸 탈모현! 강남역/분당행 버스 타러 가자!\"", score: { 셔틀정복자: 10, 출튀장인: 5 } },
+        { text: "\"야, 시험 끝났는데 모산 가서 한잔 달려야지?\"", score: { 모현술고래: 10, 명예자취: 5 } },
+        { text: "\"학점은 죽었고, 난 이제 맛집 가서 부활한다\"", score: { 맛집네비: 10, 학식개척자: 5 } },
+        { text: "\"에타 떴냐? 애들 평균 몇 점이래?\"", score: { 에타관망자: 10, 과방실세: 5 } }
+      ]
+    },
+    {
+      q: "술 진탕 먹고 친구 자취방 바닥에서 눈을 떴다. 드는 생각은?",
+      opts: [
+        { text: "\"여기가 내 집인가...?\" 익숙하게 냉장고 열어 물 마시고 다시 눕는다", score: { 명예자취: 10, 모현술고래: 5 } },
+        { text: "\"아... 1교시 어떡하지?\" 에타 켜서 휴강 공지 올라왔나 확인한다", score: { 모현술고래: 10, 출튀장인: 5 } },
+        { text: "\"야 대박, 어제 우리 술자리 썰 에타에 올라온 거 아님?\" 정보를 뒤진다", score: { 에타관망자: 10, 과방실세: 5 } },
+        { text: "\"현타 온다...\" 씻고 바로 도서관/백년관 가서 속죄 공부한다", score: { 백년관지박령: 10, 벼락치기: 5 } }
+      ]
+    },
+    {
+      q: "학식 인스타에 '특식: 돈까스/연어덮밥/마라탕' 공지가 떴을 때?",
+      opts: [
+        { text: "수업 끝나자마자 후생관/어문관 식당으로 전력 질주한다", score: { 학식개척자: 10, 고행자: 5 } },
+        { text: "동기들 태그해서 \"오늘 무조건 이거다. 어문관 앞으로 모여!\" 외친다", score: { 과방실세: 10, 명수당낭만: 5 } },
+        { text: "\"사람 많겠는데? 포장해서 명수당에서 거위랑 먹어야지\"", score: { 명수당낭만: 10, 맛집네비: 5 } },
+        { text: "\"줄 보니까 답 없다. 편의점 삼김이나 먹고 공부 시간 아껴야지\"", score: { 백년관지박령: 10, 셔틀정복자: 5 } }
+      ]
+    }
+  ];
+
+  const LABELS = ['①', '②', '③', '④'];
+  let current = 0;
+  let answers = new Array(questions.length).fill(null);
+
+  const qCounter = document.getElementById('qCounter');
+  const progressFill = document.getElementById('progressFill');
+  const questionText = document.getElementById('questionText');
+  const optionBtns = document.querySelectorAll('.option-btn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function render() {
+    const q = questions[current];
+    qCounter.textContent = `${current + 1} / ${questions.length}`;
+    progressFill.style.width = `${((current + 1) / questions.length) * 100}%`;
+    questionText.textContent = q.q;
+
+    optionBtns.forEach((btn, i) => {
+      btn.querySelector('.option-label').textContent = LABELS[i];
+      btn.querySelector('span:last-child').textContent = q.opts[i].text;
+      btn.classList.toggle('selected', answers[current] === i);
+    });
+
+    prevBtn.disabled = current === 0;
+    nextBtn.textContent = current === questions.length - 1 ? '결과 보기 →' : '다음 →';
+  }
+
+  optionBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      answers[current] = i;
+      render();
+    });
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (current > 0) { current--; render(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (answers[current] === null) { alert('선택지를 먼저 골라주세요!'); return; }
+    if (current < questions.length - 1) {
+      current++;
+      render();
+    } else {
+      // 점수 계산
+      const scores = {};
+      answers.forEach((ansIdx, qIdx) => {
+        Object.entries(questions[qIdx].opts[ansIdx].score).forEach(([type, pt]) => {
+          scores[type] = (scores[type] || 0) + pt;
+        });
+      });
+      const topType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+      localStorage.setItem('hmbti_scores', JSON.stringify(scores));
+      localStorage.setItem('hmbti_result', topType);
+      location.href = 'result.html';
+    }
+  });
+
+  render();
+  </script>
+</body>
+</html>

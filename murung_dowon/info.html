@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정보 입력 | H-MBTI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { align-items: flex-start; padding-top: 40px; }
+
+    .card { gap: 0; }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--primary);
+      padding: 0;
+      line-height: 1;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .input-group {
+      margin-bottom: 28px;
+    }
+
+    .name-input {
+      width: 100%;
+      background-color: var(--bg);
+      border: 2px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    .name-input::placeholder { color: var(--text-muted); }
+
+    .name-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* 단과대 그리드 */
+    .college-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .college-btn {
+      background: var(--bg);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 4px;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      word-break: keep-all;
+      text-align: center;
+      transition: all 0.18s;
+      line-height: 1.4;
+    }
+
+    .college-btn:hover {
+      border-color: var(--accent);
+      background: #e8f0fb;
+    }
+
+    .college-btn.selected {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0 28px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="page-header">
+      <button class="back-btn" onclick="location.href='index.html'">‹</button>
+      <span class="page-title">기본 정보 입력</span>
+    </div>
+
+    <div class="input-group">
+      <div class="section-title">이름</div>
+      <input type="text" id="userName" class="name-input" placeholder="이름을 입력해주세요" autocomplete="off" />
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="input-group">
+      <div class="section-title">소속 단과대</div>
+      <div class="college-grid" id="collegeGrid">
+        <button class="college-btn">인문대학</button>
+        <button class="college-btn">통번역대학</button>
+        <button class="college-btn">동유럽학대학</button>
+        <button class="college-btn">국제지역대학</button>
+        <button class="college-btn">경상대학</button>
+        <button class="college-btn">자연과학대학</button>
+        <button class="college-btn">공과대학</button>
+        <button class="college-btn">AI융합대학</button>
+        <button class="college-btn">바이오메디컬</button>
+        <button class="college-btn">자율전공학부</button>
+        <button class="college-btn">융합인재대학</button>
+        <button class="college-btn">기타 소속</button>
+      </div>
+    </div>
+
+    <button id="startBtn" class="btn-primary" disabled>시작하기 →</button>
+  </div>
+
+  <script>
+    const collegeButtons = document.querySelectorAll('.college-btn');
+    const startBtn = document.getElementById('startBtn');
+    const nameInput = document.getElementById('userName');
+    let selectedCollege = null;
+
+    function updateBtn() {
+      const ready = nameInput.value.trim() !== '' && selectedCollege !== null;
+      startBtn.disabled = !ready;
+    }
+
+    nameInput.addEventListener('input', updateBtn);
+
+    collegeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        collegeButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedCollege = btn.innerText;
+        updateBtn();
+      });
+    });
+
+    startBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if (!name) { alert('이름을 입력해주세요.'); nameInput.focus(); return; }
+      if (!selectedCollege) { alert('소속 단과대를 선택해주세요.'); return; }
+
+      localStorage.setItem('hmbti_name', name);
+      localStorage.setItem('hmbti_college', selectedCollege);
+      location.href = 'quiz.html';
+    });
+  </script>
+</body>
+</html>
