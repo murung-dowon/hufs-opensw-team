@@ -1,0 +1,63 @@
+// DOM 요소 초기화
+        const collegeButtons = document.querySelectorAll('.college-btn');
+        const startButton = document.getElementById('startBtn');
+        const nameInput = document.getElementById('userName');
+
+        // 상태 저장용 변수
+        let selectedCollege = null;
+
+        // [기능 1] 버튼 활성화 상태 업데이트 함수
+        // 이름이 입력되고 단과대가 선택되었을 때만 시작 버튼을 파란색으로 변경
+        function updateStartButtonState() {
+            if (nameInput.value.trim() !== '' && selectedCollege !== null) {
+                startButton.classList.add('active');
+            } else {
+                startButton.classList.remove('active');
+            }
+        }
+
+        // [기능 2] 이름 입력 이벤트 감지
+        nameInput.addEventListener('input', updateStartButtonState);
+
+        // [기능 3] 단과대 버튼 클릭 이벤트 로직
+        collegeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 1. 기존에 선택된 버튼의 스타일 초기화
+                collegeButtons.forEach(btn => btn.classList.remove('selected'));
+                
+                // 2. 현재 클릭한 버튼에 선택 스타일 적용
+                this.classList.add('selected');
+                
+                // 3. 선택한 단과대 데이터 저장
+                selectedCollege = this.innerText;
+                
+                // 4. 버튼 활성화 상태 체크
+                updateStartButtonState();
+            });
+        });
+
+        // [기능 4] 시작하기 버튼 클릭 시 다음 페이지로 데이터 전송 및 이동
+        startButton.addEventListener('click', function() {
+            const currentName = nameInput.value.trim();
+
+            // 유효성 검사 (입력 누락 방지)
+            if (!currentName) {
+                alert("이름을 정확히 입력해주세요.");
+                nameInput.focus();
+                return;
+            }
+            if (!selectedCollege) {
+                alert("소속 단과대를 목록에서 선택해주세요.");
+                return;
+            }
+
+            // URL 파라미터 생성
+            const encodedName = encodeURIComponent(currentName);
+            const encodedCollege = encodeURIComponent(selectedCollege);
+
+            // 다음 페이지 주소
+            const nextUrl = `quiz.html?name=${encodedName}&college=${encodedCollege}`;
+
+            // 페이지 이동
+            window.location.href = nextUrl;
+        });
